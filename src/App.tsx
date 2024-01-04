@@ -11,15 +11,32 @@ function App() {
       <div className='App'>
         <header className='App-header'>
           <h1>ModaResa Appointment System</h1>
+
+          <div className='button-container'>
+            <a
+              href='https://github.com/gregimbeau/MR_FE'
+              target='_blank'
+              className='git-button'
+              rel='noreferrer'>
+              Front End Repo
+            </a>
+            <a
+              href='https://github.com/gregimbeau/MR_BE'
+              target='_blank'
+              className='git-button'
+              rel='noreferrer'>
+              Back End Repo
+            </a>
+          </div>
+
           <Navbar />
         </header>
         <main>
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/appointments' element={<AppointmentList />} />
+            <Route path='/new-appointment' element={<AppointmentForm />} />
           </Routes>
-
-          <AppointmentForm />
         </main>
       </div>
     </Router>

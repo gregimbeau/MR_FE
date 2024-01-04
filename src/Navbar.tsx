@@ -10,9 +10,13 @@ const Navbar: React.FC = () => {
             <Link to='/'>Home</Link>
           </li>
           <li>
-            <Link to='/appointments'>Appointments</Link>
+            <Link to='/appointments'>Appointments</Link>{" "}
+          </li>{" "}
+          <li>
+            <Link to='/new-appointment' className='button'>
+              New Appointment
+            </Link>
           </li>
-          {/* Add more navigation links as needed */}
         </ul>
       </nav>
     </div>
