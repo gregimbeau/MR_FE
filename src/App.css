@@ -195,3 +195,30 @@ body {
 .git-button:hover {
   background-color: #78a8e7 !important;
 }
+.delete-button {
+  background-color: #c0392b;
+}
+
+.delete-button:hover {
+  background-color: #e74c3c;
+}
+
+
+.git-button-container, .db-button-container {
+  margin-top: 10px;
+}
+
+.db-button {
+  background-color: #4CAF50; /* Green */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.db-button:hover {
+  background-color: #45a049;
+}

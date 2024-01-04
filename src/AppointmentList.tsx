@@ -8,6 +8,8 @@ type Appointment = {
   title: string;
   type: string;
   location: string;
+  vendor_name: string;
+  buyer_name: string; 
   host_id: number;
   client_id: number;
   start_time: string;
@@ -22,43 +24,60 @@ const AppointmentList: React.FC = () => {
   const [editingAppointment, setEditingAppointment] =
     useState<Appointment | null>(null);
   const editFormRef = useRef<HTMLDivElement>(null);
-  const editFormContainerRef = useRef<HTMLDivElement>(null); 
+  const editFormContainerRef = useRef<HTMLDivElement>(null);
 
-const handleEdit = (appointment: Appointment) => {
-  setEditingAppointment(appointment);
-  setIsEditing(true);
+  const handleEdit = (appointment: Appointment) => {
+    setEditingAppointment(appointment);
+    setIsEditing(true);
 
-  // Wait for the next render to complete
-  setTimeout(() => {
-    editFormContainerRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, 0);
-};
-
+    // Wait for the next render to complete
+    setTimeout(() => {
+      editFormContainerRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 0);
+  };
 
   const closeEditForm = () => {
     setEditingAppointment(null);
     setIsEditing(false);
   };
 
-const fetchAppointments = async () => {
-  try {
-    const response = await axios.get(
-      `${
-        process.env.REACT_APP_API_URL || "http://localhost:3000/api"
-      }/appointments`
+  const handleDelete = async (appointmentId: number) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this appointment?"
     );
-    setAppointments(response.data);
-    setLoading(false);
-  } catch (error) {
-    console.error("Error fetching data: ", error);
-    setError("Error fetching data. Please try again later.");
-    setLoading(false);
-  }
-};
+    if (confirmDelete) {
+      try {
+        await axios.delete(
+          `${
+            process.env.REACT_APP_API_URL || "http://localhost:3000/api"
+          }/appointments/${appointmentId}`
+        );
+        fetchAppointments();
+      } catch (error) {
+        console.error("Error deleting appointment: ", error);
+      }
+    }
+  };
 
-useEffect(() => {
-  fetchAppointments();
-}, []);
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get(
+        `${
+          process.env.REACT_APP_API_URL || "http://localhost:3000/api"
+        }/appointments`
+      );
+      setAppointments(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+      setError("Error fetching data. Please try again later.");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
 
   return (
     <div className='appointment-list-container'>
@@ -73,13 +92,21 @@ useEffect(() => {
             {appointments.map((appointment) => (
               <div className='card' key={appointment.id}>
                 <h3>{appointment.title}</h3>
-                <h4>{appointment.location}</h4>
+                <h4>Type: {appointment.type}</h4>
+                <h4>Location: {appointment.location}</h4>
+                <p>Vendor: {appointment.vendor_name}</p>
+                <p>Buyer: {appointment.buyer_name}</p>
                 <p>Start Time: {appointment.start_time}</p>
                 <p>End Time: {appointment.end_time}</p>
                 <button
                   className='button'
                   onClick={() => handleEdit(appointment)}>
                   Edit
+                </button>
+                <button
+                  className='button delete-button'
+                  onClick={() => handleDelete(appointment.id)}>
+                  Delete
                 </button>
               </div>
             ))}

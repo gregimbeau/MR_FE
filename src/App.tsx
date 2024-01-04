@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AppointmentList from "./AppointmentList";
@@ -6,12 +7,37 @@ import AppointmentForm from "./AppointmentForm";
 import Navbar from "./Navbar";
 
 function App() {
+  const handleSeedDatabase = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/seed-database"
+      );
+      console.log(response.data);
+      alert("Database seeded successfully");
+    } catch (error) {
+      console.error("Error seeding database: ", error);
+      alert("Error seeding database");
+    }
+  };
+
+  const handleClearDatabase = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/clear-database"
+      );
+      console.log(response.data);
+      alert("Database cleared successfully");
+    } catch (error) {
+      console.error("Error clearing database: ", error);
+      alert("Error clearing database");
+    }
+  };
+
   return (
     <Router>
       <div className='App'>
         <header className='App-header'>
           <h1>ModaResa Appointment System</h1>
-
           <div className='button-container'>
             <a
               href='https://github.com/gregimbeau/MR_FE'
@@ -27,8 +53,16 @@ function App() {
               rel='noreferrer'>
               Back End Repo
             </a>
+            {/* Seed and Clear Database Buttons */}
+            <div className='db-button-container'>
+              <button onClick={handleSeedDatabase} className='db-button'>
+                Seed (vendors/buyers)
+              </button>
+              <button onClick={handleClearDatabase} className='db-button'>
+                Clear DB from all data
+              </button>
+            </div>
           </div>
-
           <Navbar />
         </header>
         <main>
