@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+type Vendor = {
+  id: number;
+  name: string;
+};
+
+type Buyer = {
+  id: number;
+  name: string;
+  company_name: string;
+};
+
 type Appointment = {
   id: number;
   title: string;
   type: string;
   location: string;
-  host_id: number;
-  client_id: number;
+  vendor_id: number;
+  buyer_id: number;
   start_time: string;
   end_time: string;
 };
@@ -23,17 +34,51 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
   closeEditForm,
   refreshAppointments,
 }) => {
-  const [title, setTitle] = useState(appointment.title);
-  const [type, setType] = useState(appointment.type);
-  const [location, setLocation] = useState(appointment.location);
-  const [hostId, setHostId] = useState(appointment.host_id);
-  const [clientId, setClientId] = useState(appointment.client_id);
-  const [startTime, setStartTime] = useState(appointment.start_time);
-  const [endTime, setEndTime] = useState(appointment.end_time);
+  const [title, setTitle] = useState(appointment.title || "");
+  const [type, setType] = useState(appointment.type || "");
+  const [location, setLocation] = useState(appointment.location || "");
+  const [vendorId, setVendorId] = useState(appointment.vendor_id || 0);
+  const [buyerId, setBuyerId] = useState(appointment.buyer_id || 0);
+  const [startTime, setStartTime] = useState(appointment.start_time || "");
+  const [endTime, setEndTime] = useState(appointment.end_time || "");
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [buyers, setBuyers] = useState<Buyer[]>([]);
 
-  useEffect(() => {}, [appointment]);
+  useEffect(() => {
+    const fetchVendorsAndBuyers = async () => {
+      try {
+        const vendorsResponse = await axios.get(
+          "http://localhost:3000/api/vendors"
+        );
+        const buyersResponse = await axios.get(
+          "http://localhost:3000/api/buyers"
+        );
+        setVendors(vendorsResponse.data);
+        setBuyers(buyersResponse.data);
 
-  const handleSubmit = async (event: { preventDefault: () => void }) => {
+        // Setting selected vendor and buyer
+        if (appointment.vendor_id) setVendorId(appointment.vendor_id);
+        if (appointment.buyer_id) setBuyerId(appointment.buyer_id);
+      } catch (error) {
+        console.error("Error fetching vendors and buyers: ", error);
+      }
+    };
+
+    fetchVendorsAndBuyers();
+  }, [appointment]);
+
+  const formatDateTimeLocal = (isoString: string) => {
+    const date = new Date(isoString);
+    const offset = date.getTimezoneOffset() * 60000;
+    return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+  };
+
+  useEffect(() => {
+    setStartTime(formatDateTimeLocal(appointment.start_time));
+    setEndTime(formatDateTimeLocal(appointment.end_time));
+  }, [appointment]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
       const response = await axios.put(
@@ -42,20 +87,47 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
           title,
           type,
           location,
-          host_id: hostId,
-          client_id: clientId,
+          vendor_id: vendorId,
+          buyer_id: buyerId,
           start_time: startTime,
           end_time: endTime,
         }
       );
       console.log(response.data);
-      refreshAppointments(); // Refresh the appointment list
-      closeEditForm(); // Close the edit form
-      window.scrollTo(0, 0); // Scroll to the top
+      alert("Appointment updated successfully!");
+      refreshAppointments();
+      closeEditForm();
+      window.scrollTo(0, 0);
     } catch (error) {
-      console.error("Error updating appointment: ", error);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 400) {
+          // Custom message for overlapping appointments
+          alert(
+            "Error: Appointment times overlap with an existing appointment."
+          );
+        } else {
+          // General error message for other types of errors
+          alert(
+            `Error updating appointment: ${
+              error.response.data.message || "Please try again later."
+            }`
+          );
+        }
+      } else {
+        console.error("Error updating appointment: ", error);
+        alert("An unexpected error occurred. Please try again later.");
+      }
     }
   };
+
+  function setHostId(arg0: number): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function setClientId(arg0: number): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className='appointment-form-container'>
       <form onSubmit={handleSubmit} className='appointment-form'>
@@ -71,9 +143,8 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
           onChange={(e) => setType(e.target.value)}
           className='form-input'>
           <option value=''>Select Type</option>
-          <option value='ponctual'>Ponctual</option>
-          <option value='recurring'>Recurring</option>
-          <option value='other'>Other</option>
+          <option value='virtual'>Virtual</option>
+          <option value='physical'>Physical</option>
         </select>
         <input
           type='text'
@@ -82,25 +153,31 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
           placeholder='Location'
           className='form-input'
         />
-        <input
-          type='text'
-          value={hostId}
-          onChange={(e) =>
-            setHostId(e.target.value ? Number(e.target.value) : 0)
-          }
-          placeholder='Host ID'
-          className='form-input'
-        />
+        {/* Vendor dropdown */}
+        <select
+          value={vendorId}
+          onChange={(e) => setVendorId(Number(e.target.value))}
+          className='form-input'>
+          <option value=''>Select Vendor</option>
+          {vendors.map((vendor) => (
+            <option key={vendor.id} value={vendor.id}>
+              {vendor.name}
+            </option>
+          ))}
+        </select>
 
-        <input
-          type='text'
-          value={clientId}
-          onChange={(e) =>
-            setClientId(e.target.value ? Number(e.target.value) : 0)
-          }
-          placeholder='Client ID'
-          className='form-input'
-        />
+        {/* Buyer dropdown */}
+        <select
+          value={buyerId}
+          onChange={(e) => setBuyerId(Number(e.target.value))}
+          className='form-input'>
+          <option value=''>Select Buyer</option>
+          {buyers.map((buyer) => (
+            <option key={buyer.id} value={buyer.id}>
+              {buyer.name}
+            </option>
+          ))}
+        </select>
         <input
           type='datetime-local'
           value={startTime}

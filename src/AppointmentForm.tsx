@@ -12,6 +12,7 @@ type Buyer = {
   id: number;
   name: string;
   company_name: string;
+  
 };
 
 const AppointmentForm: React.FC = () => {
@@ -45,6 +46,15 @@ const AppointmentForm: React.FC = () => {
     fetchVendorsAndBuyers();
   }, []);
 
+  const handleVendorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setVendorId(e.target.value);
+  };
+
+  const handleBuyerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setBuyerId(e.target.value);
+  };
+
+
 const handleSubmit = async (event: React.FormEvent) => {
   event.preventDefault();
   try {
@@ -62,12 +72,29 @@ const handleSubmit = async (event: React.FormEvent) => {
     );
     console.log(response.data);
     alert("Appointment created successfully!");
-    navigate("/appointments"); // Navigate to the appointment list
+    navigate("/appointments"); // Navigate to the appointments list
   } catch (error) {
-    console.error("Error submitting form: ", error);
-    alert("Error creating appointment");
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 400) {
+        // Custom message for overlapping appointments
+        alert(
+          "Error: The appointment times overlap with an existing appointment."
+        );
+      } else {
+        // General error message for other types of errors
+        alert(
+          `Error creating appointment: ${
+            error.response.data.message || "Please try again later."
+          }`
+        );
+      }
+    } else {
+      console.error("Error submitting form: ", error);
+      alert("An unexpected error occurred. Please try again later.");
+    }
   }
 };
+
 
 
   return (
@@ -81,8 +108,8 @@ const handleSubmit = async (event: React.FormEvent) => {
           className='form-input'
         />
         <select
-          value={vendorId}
-          onChange={(e) => setVendorId(e.target.value)}
+          value={vendorId.toString()}
+          onChange={handleVendorChange}
           className='form-input'>
           <option value=''>Select Vendor</option>
           {vendors.map((vendor) => (
@@ -92,8 +119,8 @@ const handleSubmit = async (event: React.FormEvent) => {
           ))}
         </select>
         <select
-          value={buyerId}
-          onChange={(e) => setBuyerId(e.target.value)}
+          value={buyerId.toString()}
+          onChange={handleBuyerChange}
           className='form-input'>
           <option value=''>Select Buyer</option>
           {buyers.map((buyer) => (
@@ -111,13 +138,15 @@ const handleSubmit = async (event: React.FormEvent) => {
           <option value='physical'>Physical</option>
         </select>
 
-        <input
-          type='text'
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          placeholder='Location'
-          className='form-input'
-        />
+        {type === "physical" && (
+          <input
+            type='text'
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder='Location'
+            className='form-input'
+          />
+        )}
         <p>Start</p>
         <input
           type='datetime-local'

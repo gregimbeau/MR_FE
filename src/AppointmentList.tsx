@@ -9,12 +9,21 @@ type Appointment = {
   type: string;
   location: string;
   vendor_name: string;
-  buyer_name: string; 
-  host_id: number;
-  client_id: number;
+  buyer_name: string;
+  vendor_id: number;
+  buyer_id: number;
   start_time: string;
   end_time: string;
 };
+
+const formatDateAndTime = (isoString: string) => {
+  const date = new Date(isoString);
+  return `${date.toLocaleDateString()} at ${date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
+};
+
 
 const AppointmentList: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -59,6 +68,7 @@ const AppointmentList: React.FC = () => {
     }
   };
 
+
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
@@ -93,11 +103,13 @@ const AppointmentList: React.FC = () => {
               <div className='card' key={appointment.id}>
                 <h3>{appointment.title}</h3>
                 <h4>Type: {appointment.type}</h4>
-                <h4>Location: {appointment.location}</h4>
+                {appointment.type === "physical" && (
+                  <h4>Location: {appointment.location}</h4>
+                )}{" "}
                 <p>Vendor: {appointment.vendor_name}</p>
                 <p>Buyer: {appointment.buyer_name}</p>
-                <p>Start Time: {appointment.start_time}</p>
-                <p>End Time: {appointment.end_time}</p>
+                <p>Start Time: {formatDateAndTime(appointment.start_time)}</p>
+                <p>End Time: {formatDateAndTime(appointment.end_time)}</p>
                 <button
                   className='button'
                   onClick={() => handleEdit(appointment)}>
