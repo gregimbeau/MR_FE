@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+import { render, fireEvent, waitFor, screen, within } from "@testing-library/react";
 import axios from "axios";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import AppointmentForm from "./AppointmentForm";
@@ -13,6 +13,10 @@ jest.mock("react-router-dom", () => ({
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("AppointmentForm", () => {
+  beforeAll(() => {
+    window.alert = jest.fn();
+  });
+
   beforeEach(() => {
     // Mock API responses for vendors and buyers
     mockedAxios.get.mockResolvedValueOnce({
@@ -39,8 +43,9 @@ describe("AppointmentForm", () => {
     });
 
     await waitFor(() => {
-      const buyerElement = screen.getByText("Buyer 1");
-      expect(buyerElement).toBeInTheDocument();
+      const buyerSelect = screen.getByTestId("buyer-select");
+      const buyerOption = within(buyerSelect).getByText("Buyer 1 - Company 1");
+      expect(buyerOption).toBeInTheDocument();
     });
 
     // Simulate user filling out the form
@@ -82,7 +87,7 @@ describe("AppointmentForm", () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        "http://localhost:3000/api/appointments",
+        `${process.env.REACT_APP_API_URL}/appointments`,
         expect.objectContaining({
           title: "New Appointment",
           type: "physical",

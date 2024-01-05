@@ -182,13 +182,14 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
 
         {/* Buyer dropdown */}
         <select
+          data-testid='buyer-select'
           value={buyerId}
           onChange={(e) => setBuyerId(Number(e.target.value))}
           className='form-input'>
           <option value=''>Select Buyer</option>
           {buyers.map((buyer) => (
             <option key={buyer.id} value={buyer.id}>
-              {buyer.name}
+              {buyer.name} - {buyer.company_name}
             </option>
           ))}
         </select>

@@ -124,7 +124,7 @@ const AppointmentForm: React.FC = () => {
           <option value=''>Select Buyer</option>
           {buyers.map((buyer) => (
             <option key={buyer.id} value={buyer.id}>
-              {buyer.name}
+              {buyer.name} - {buyer.company_name}
             </option>
           ))}
         </select>
