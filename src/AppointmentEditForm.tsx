@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { REACT_APP_API_URL } from "./config";
 
 type Vendor = {
   id: number;
@@ -49,12 +50,12 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
       try {
         const vendorsResponse = await axios.get(
           `${
-            process.env.REACT_APP_API_URL
+            REACT_APP_API_URL
           }/vendors`
         );
         const buyersResponse = await axios.get(
           `${
-            process.env.REACT_APP_API_URL
+            REACT_APP_API_URL
           }/buyers`
         );
         setVendors(vendorsResponse.data);
@@ -101,7 +102,7 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
     }
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/appointments/${appointment.id}`,
+        `${REACT_APP_API_URL}/appointments/${appointment.id}`,
         {
           title,
           type,

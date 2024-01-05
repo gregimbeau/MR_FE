@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./App.css";
 import AppointmentEditForm from "./AppointmentEditForm";
+import { REACT_APP_API_URL } from "./config";
+
 
 type Appointment = {
   id: number;
@@ -54,7 +56,7 @@ const AppointmentList: React.FC = () => {
       try {
         await axios.delete(
           `${
-            process.env.REACT_APP_API_URL
+            REACT_APP_API_URL
           }/appointments/${appointmentId}`
         );
         fetchAppointments();
@@ -68,7 +70,7 @@ const AppointmentList: React.FC = () => {
     try {
       const response = await axios.get(
         `${
-          process.env.REACT_APP_API_URL
+          REACT_APP_API_URL
         }/appointments`
       );
       setAppointments(response.data);

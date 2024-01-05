@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
+import { REACT_APP_API_URL } from "./config";
+
 
 type Vendor = {
   id: number;
@@ -30,10 +32,10 @@ const AppointmentForm: React.FC = () => {
     const fetchVendorsAndBuyers = async () => {
       try {
         const vendorsResponse = await axios.get(
-          `${process.env.REACT_APP_API_URL}/vendors`
+          `${REACT_APP_API_URL}/vendors`
         );
         const buyersResponse = await axios.get(
-          `${process.env.REACT_APP_API_URL}/buyers`
+          `${REACT_APP_API_URL}/buyers`
         );
         setVendors(vendorsResponse.data);
         setBuyers(buyersResponse.data);

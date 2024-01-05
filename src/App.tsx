@@ -5,12 +5,14 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AppointmentList from "./AppointmentList";
 import AppointmentForm from "./AppointmentForm";
 import Navbar from "./Navbar";
+import { REACT_APP_API_URL } from "./config";
+
 
 function App() {
   const handleSeedDatabase = async () => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/seed-database`
+        `${REACT_APP_API_URL}/seed-database`
       );
       console.log(response.data);
       alert("Database seeded successfully");
@@ -23,7 +25,7 @@ function App() {
   const handleClearDatabase = async () => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/clear-database`
+        `${REACT_APP_API_URL}/clear-database`
       );
       console.log(response.data);
       alert("Database cleared successfully");
