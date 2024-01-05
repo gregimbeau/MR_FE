@@ -24,7 +24,6 @@ const formatDateAndTime = (isoString: string) => {
   })}`;
 };
 
-
 const AppointmentList: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -68,7 +67,6 @@ const AppointmentList: React.FC = () => {
     }
   };
 
-
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(
@@ -78,6 +76,7 @@ const AppointmentList: React.FC = () => {
       );
       setAppointments(response.data);
       setLoading(false);
+      setError(null); // Clear any previous errors
     } catch (error) {
       console.error("Error fetching data: ", error);
       setError("Error fetching data. Please try again later.");

@@ -12,7 +12,6 @@ type Buyer = {
   id: number;
   name: string;
   company_name: string;
-  
 };
 
 const AppointmentForm: React.FC = () => {
@@ -26,7 +25,6 @@ const AppointmentForm: React.FC = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [buyers, setBuyers] = useState<Buyer[]>([]);
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const fetchVendorsAndBuyers = async () => {
@@ -54,48 +52,45 @@ const AppointmentForm: React.FC = () => {
     setBuyerId(e.target.value);
   };
 
-
-const handleSubmit = async (event: React.FormEvent) => {
-  event.preventDefault();
-  try {
-    const response = await axios.post(
-      "http://localhost:3000/api/appointments",
-      {
-        title,
-        type,
-        location,
-        vendor_id: parseInt(vendorId),
-        buyer_id: parseInt(buyerId),
-        start_time: startTime,
-        end_time: endTime,
-      }
-    );
-    console.log(response.data);
-    alert("Appointment created successfully!");
-    navigate("/appointments"); // Navigate to the appointments list
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      if (error.response.status === 400) {
-        // Custom message for overlapping appointments
-        alert(
-          "Error: The appointment times overlap with an existing appointment."
-        );
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/appointments",
+        {
+          title,
+          type,
+          location,
+          vendor_id: parseInt(vendorId),
+          buyer_id: parseInt(buyerId),
+          start_time: startTime,
+          end_time: endTime,
+        }
+      );
+      console.log(response.data);
+      alert("Appointment created successfully!");
+      navigate("/appointments"); // Navigate to the appointments list
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 400) {
+          // Custom message for overlapping appointments
+          alert(
+            "Error: The appointment times overlap with an existing appointment."
+          );
+        } else {
+          // General error message for other types of errors
+          alert(
+            `Error creating appointment: ${
+              error.response.data.message || "Please try again later."
+            }`
+          );
+        }
       } else {
-        // General error message for other types of errors
-        alert(
-          `Error creating appointment: ${
-            error.response.data.message || "Please try again later."
-          }`
-        );
+        console.error("Error submitting form: ", error);
+        alert("An unexpected error occurred. Please try again later.");
       }
-    } else {
-      console.error("Error submitting form: ", error);
-      alert("An unexpected error occurred. Please try again later.");
     }
-  }
-};
-
-
+  };
 
   return (
     <div className='appointment-form-container'>
@@ -110,7 +105,8 @@ const handleSubmit = async (event: React.FormEvent) => {
         <select
           value={vendorId.toString()}
           onChange={handleVendorChange}
-          className='form-input'>
+          className='form-input'
+          data-testid='vendor-select'>
           <option value=''>Select Vendor</option>
           {vendors.map((vendor) => (
             <option key={vendor.id} value={vendor.id}>
@@ -121,7 +117,8 @@ const handleSubmit = async (event: React.FormEvent) => {
         <select
           value={buyerId.toString()}
           onChange={handleBuyerChange}
-          className='form-input'>
+          className='form-input'
+          data-testid='buyer-select'>
           <option value=''>Select Buyer</option>
           {buyers.map((buyer) => (
             <option key={buyer.id} value={buyer.id}>
@@ -132,7 +129,8 @@ const handleSubmit = async (event: React.FormEvent) => {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className='form-input'>
+          className='form-input'
+          data-testid='type-select'>
           <option value=''>Select Type</option>
           <option value='virtual'>Virtual</option>
           <option value='physical'>Physical</option>
@@ -153,6 +151,7 @@ const handleSubmit = async (event: React.FormEvent) => {
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
           className='form-input'
+          data-testid='start-time'
         />
         <p>End</p>
 
@@ -161,6 +160,7 @@ const handleSubmit = async (event: React.FormEvent) => {
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
           className='form-input'
+          data-testid='end-time'
         />
         <button type='submit' className='form-button'>
           Submit
