@@ -48,10 +48,14 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
     const fetchVendorsAndBuyers = async () => {
       try {
         const vendorsResponse = await axios.get(
-          "http://localhost:3000/api/vendors"
+          `${
+            process.env.REACT_APP_API_URL
+          }/vendors`
         );
         const buyersResponse = await axios.get(
-          "http://localhost:3000/api/buyers"
+          `${
+            process.env.REACT_APP_API_URL
+          }/buyers`
         );
         setVendors(vendorsResponse.data);
         setBuyers(buyersResponse.data);
@@ -80,9 +84,24 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    // Check if the selected vendorId exists in the vendors array
+    const isVendorIdValid = vendors.some((vendor) => vendor.id === vendorId);
+
+    if (!isVendorIdValid) {
+      alert("Invalid Vendor selected. Please select a valid Vendor.");
+      return;
+    }
+
+    // Check if the selected buyerId exists in the buyers array
+    const isBuyerIdValid = buyers.some((buyer) => buyer.id === buyerId);
+
+    if (!isBuyerIdValid) {
+      alert("Invalid Buyer selected. Please select a valid Buyer.");
+      return;
+    }
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/appointments/${appointment.id}`,
+        `${process.env.REACT_APP_API_URL}/appointments/${appointment.id}`,
         {
           title,
           type,
@@ -120,13 +139,7 @@ const AppointmentEditForm: React.FC<AppointmentEditFormProps> = ({
     }
   };
 
-  function setHostId(arg0: number): void {
-    throw new Error("Function not implemented.");
-  }
 
-  function setClientId(arg0: number): void {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <div className='appointment-form-container'>

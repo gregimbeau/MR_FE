@@ -26,17 +26,15 @@ const formatDateAndTime = (isoString: string) => {
 
 const AppointmentList: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingAppointment, setEditingAppointment] =
     useState<Appointment | null>(null);
-  const editFormRef = useRef<HTMLDivElement>(null);
   const editFormContainerRef = useRef<HTMLDivElement>(null);
 
   const handleEdit = (appointment: Appointment) => {
     setEditingAppointment(appointment);
-    setIsEditing(true);
+   
 
     // Wait for the next render to complete
     setTimeout(() => {
@@ -46,7 +44,6 @@ const AppointmentList: React.FC = () => {
 
   const closeEditForm = () => {
     setEditingAppointment(null);
-    setIsEditing(false);
   };
 
   const handleDelete = async (appointmentId: number) => {
@@ -57,7 +54,7 @@ const AppointmentList: React.FC = () => {
       try {
         await axios.delete(
           `${
-            process.env.REACT_APP_API_URL || "http://localhost:3000/api"
+            process.env.REACT_APP_API_URL
           }/appointments/${appointmentId}`
         );
         fetchAppointments();
@@ -71,7 +68,7 @@ const AppointmentList: React.FC = () => {
     try {
       const response = await axios.get(
         `${
-          process.env.REACT_APP_API_URL || "http://localhost:3000/api"
+          process.env.REACT_APP_API_URL
         }/appointments`
       );
       setAppointments(response.data);

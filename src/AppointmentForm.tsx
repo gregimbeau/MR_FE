@@ -30,10 +30,10 @@ const AppointmentForm: React.FC = () => {
     const fetchVendorsAndBuyers = async () => {
       try {
         const vendorsResponse = await axios.get(
-          "http://localhost:3000/api/vendors"
+          `${process.env.REACT_APP_API_URL}/vendors`
         );
         const buyersResponse = await axios.get(
-          "http://localhost:3000/api/buyers"
+          `${process.env.REACT_APP_API_URL}/buyers`
         );
         setVendors(vendorsResponse.data);
         setBuyers(buyersResponse.data);
@@ -56,7 +56,7 @@ const AppointmentForm: React.FC = () => {
     event.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/appointments",
+        `${process.env.REACT_APP_API_URL}/appointments`,
         {
           title,
           type,
