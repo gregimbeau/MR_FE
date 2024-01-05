@@ -10,7 +10,7 @@ function App() {
   const handleSeedDatabase = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/seed-database"
+        `${process.env.REACT_APP_API_URL}/seed-database`
       );
       console.log(response.data);
       alert("Database seeded successfully");
@@ -23,7 +23,7 @@ function App() {
   const handleClearDatabase = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/clear-database"
+        `${process.env.REACT_APP_API_URL}/clear-database`
       );
       console.log(response.data);
       alert("Database cleared successfully");
